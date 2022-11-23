@@ -1,27 +1,29 @@
-# memorystore [![NPM Version](https://img.shields.io/npm/v/memorystore.svg)](https://www.npmjs.com/package/memorystore) ![node](https://img.shields.io/node/v/memorystore.svg) [![Build Status](https://travis-ci.org/roccomuso/memorystore.svg?branch=master)](https://travis-ci.org/roccomuso/memorystore) [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
+# Express-MemFileStore
 
-> express-session full featured `MemoryStore` module without leaks!
+> express-session full featured `MemoryStore` module without leaks! This fork of MemoryStore allows sessions to be persisted to the disk.
 
 A session store implementation for Express using [lru-cache](https://github.com/isaacs/node-lru-cache).
 
 Because the default `MemoryStore` for [express-session](https://github.com/expressjs/session) will lead to a memory leak due to it haven't a suitable way to make them expire.
 
-The sessions are still stored in memory, so they're not shared with other processes or services.
+The sessions are still stored in memory, so they're not shared with other processes or services. The sessions will also be persisted to the disk.
 
 ## Setup
 
-    $ npm install express-session memorystore
+    $ npm install express-session express-memfilestore
 
-Pass the `express-session` store into `memorystore` to create a `MemoryStore` constructor.
+Pass the `express-session` store into `express-memfilestore` to create a `MemoryStore` constructor.
 
 ```javascript
 const session = require('express-session')
-const MemoryStore = require('memorystore')(session)
+const MemFileStore = require('express-memfilestore')(session)
 
 app.use(session({
     cookie: { maxAge: 86400000 },
-    store: new MemoryStore({
-      checkPeriod: 86400000 // prune expired entries every 24h
+    store: new MemFileStore({
+      checkPeriod: 86400000, // prune expired entries every 24h
+	  savePeriod: 300000, // saves sessions to disk every 5m
+	  saveFile: path.join(__dirname, 'sessions.json')
     }),
     resave: false,
     secret: 'keyboard cat'
@@ -30,7 +32,9 @@ app.use(session({
 
 ## Options
 
-* `checkPeriod` Define how long MemoryStore will check for expired. The period is in ms. The automatic check is disabled by default! Not setting this is kind of silly, since that's the whole purpose of this lib.
+* `checkPeriod` Define how long MemFileStore will check for expired. The period is in ms.
+* `savePeriod` Sets how often MemFileStore will save sessions to disk. This is in ms.
+* `saveFile` The file that MemFileStore will save the sessions to. If this is in a directory, the directory must already exist.
 * `max` The maximum size of the cache, checked by applying the length
   function to all values in the cache.  It defaults to `Infinity`.
 * `ttl` Session TTL (expiration) in milliseconds. Defaults to session.maxAge (if set), or one day. This may also be set to a function of the form `(options, sess, sessionID) => number`.
@@ -52,20 +56,12 @@ app.use(session({
 
 ## Methods
 
-`memorystore` implements all the **required**, **recommended** and **optional** methods of the [express-session](https://github.com/expressjs/session#session-store-implementation) store. Plus a few more:
+`MemFileStore` implements all the **required**, **recommended** and **optional** methods of the [express-session](https://github.com/expressjs/session#session-store-implementation) store. Plus a few more:
 
-- `startInterval()` and `stopInterval()` methods to start/clear the automatic check for expired.
+- `startInterval()` and `stopInterval()` methods to start/clear the automatic check for expired. `startSaveInterval()` and `stopSaveInterval()` methods start/stop the session saving.
 
 - `prune()` that you can use to manually remove only the expired entries from the store.
 
 ## Debug
 
-To enable debug set the env var `DEBUG=memorystore`
-
-# Author
-
-Rocco Musolino ([@roccomuso](https://twitter.com/roccomuso))
-
-# License
-
-MIT
+To enable debug set the env var `DEBUG=MemFileStore`

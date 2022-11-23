@@ -2,14 +2,23 @@ import expressSession, {
 	MemoryStore as ExpressMemoryStore,
 } from "express-session";
 
-interface MemoryStoreOptions {
+interface MemFileStoreOptions {
 	/**
-	 * Define how long MemoryStore will check for expired.
+	 * Define how long MemFileStore will check for expired.
 	 * The period is in ms. The automatic check is disabled by default!
 	 * Not setting this is kind of silly, since that's the whole purpose of
 	 * this lib.
 	 */
-	checkPeriod?: number;
+	checkPeriod: number;
+	/**
+	 * Define how often the sessions will be saved to a file.
+	 */
+	savePeriod: number;
+	/**
+	 * The file that the sessions will be saved to.
+	 * If in a directory, the directory must already exist.
+	 */
+	saveFile: string;
 	/**
 	 * The maximum size of the cache, checked by applying the length
 	 * function to all values in the cache. It defaults to `Infinity`.
@@ -55,12 +64,18 @@ interface MemoryStoreOptions {
 	};
 }
 
-declare class MemoryStore extends ExpressMemoryStore {
-	constructor(options: MemoryStoreOptions);
+declare class MemFileStore extends ExpressMemoryStore {
+	constructor(options: MemFileStoreOptions);
 	/** method to start the automatic check for expired. */
 	startInterval(): void;
 	/** method to clear the automatic check for expired. */
 	stopInterval(): void;
+
+	/** method to start the automatic session saving. */
+	startSaveInterval(): void;
+	/** method to clear the automatic session saving. */
+	stopSaveInterval(): void;
+
 	/** use to manually remove only the expired entries from the store. */
 	prune(): void;
 }
@@ -69,13 +84,13 @@ declare class MemoryStore extends ExpressMemoryStore {
  * Sample usage:
  * ```
  * import session from 'express-session';
- * import createMemoryStore from 'memorystore';
- * const MemoryStore = createMemoryStore(session);
+ * import createMemoryStore from 'express-memfilestore';
+ * const MemFileStore = createMemoryStore(session);
  * ...
- * app.use(session({ store: new MemoryStore({ ...options }) }));
+ * app.use(session({ store: new MemFileStore({ ...options }) }));
  * ```
  */
 declare function createMemoryStore(
 	session: typeof expressSession
-): typeof MemoryStore;
+): typeof MemFileStore;
 export = createMemoryStore;

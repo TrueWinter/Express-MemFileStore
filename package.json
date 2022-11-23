@@ -1,12 +1,9 @@
 {
   "name": "express-memfilestore",
-  "version": "1.6.7",
-  "description": "express-session full featured MemoryStore layer without leaks! Supports persisting sessions to disk.",
+  "version": "1.7.0",
+  "description": "express-session full featured MemoryStore layer without leaks! Allows persisting sessions to disk.",
   "main": "index.js",
   "types": "index.d.ts",
-  "scripts": {
-    "test": "mocha --check-leaks --bail --no-exit test/"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/TrueWinter/Express-MemFileStore.git"
@@ -24,8 +21,8 @@
     "ram"
   ],
   "authors": [
-	  "Rocco Musolino (roccomuso)",
-	  "Nicholis du Toit (TrueWinter)"
+	  "Rocco Musolino (roccomuso, developer of memorystore)",
+	  "Nicholis du Toit (TrueWinter, developer of this fork)"
   ],
   "license": "MIT",
   "bugs": {
@@ -35,13 +32,5 @@
   "dependencies": {
     "debug": "^4.3.0",
     "lru-cache": "^4.0.3"
-  },
-  "devDependencies": {
-    "mocha": "9.2.0"
-  },
-  "standard": {
-    "env": [
-      "mocha"
-    ]
   }
 }
