@@ -1,1 +1,1 @@
-module.exports = require('./lib/memorystore.js')
+module.exports = require('./lib/memorystore.js');
